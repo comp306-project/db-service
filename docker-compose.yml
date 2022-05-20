@@ -3,12 +3,18 @@ version: '3.0'
 services:
   flask:
     build: .
+    restart: unless-stopped
+    volumes:
+      - "./run.py:/app/run.py"
+      - "./app:/app/app"
     ports:
       - "5000:5000"
-
+    depends_on:
+      db:
+        condition: service_healthy
 
   db:
-    image: mysql:8
+    image: mysql:latest
     restart: unless-stopped
     volumes:
       - "./files/db:/docker-entrypoint-initdb.d"
@@ -18,3 +24,7 @@ services:
       MYSQL_USER: user
       MYSQL_PASSWORD: password
       MYSQL_DATABASE: world
+    healthcheck:
+      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10

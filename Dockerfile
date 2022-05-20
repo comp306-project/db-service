@@ -1,4 +1,4 @@
-FROM arm64v8/python
+FROM python:3.9
 
 
 WORKDIR /app
@@ -6,7 +6,5 @@ WORKDIR /app
 COPY requirements.txt ./
 
 RUN pip install -r requirements.txt
-
-COPY . .
 
 CMD python run.py
