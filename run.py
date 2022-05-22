@@ -6,13 +6,13 @@ app = Flask(__name__)
 @app.route('/databases')
 def databases():
     cursor.execute("SHOW DATABASES")
-    result = [res[0].decode("utf-8") for res in cursor.fetchall()]
+    result = [res[0] for res in cursor.fetchall()]
     return jsonify(result), 200
 
 @app.route('/tables')
 def tables():
     cursor.execute("SHOW TABLES")
-    result = [res[0].decode('utf-8') for res in cursor.fetchall()]
+    result = [res[0] for res in cursor.fetchall()]
     return jsonify(result), 200
 
 @app.route('/tables/CIRCUITS')

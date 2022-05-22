@@ -14,16 +14,8 @@ services:
         condition: service_healthy
 
   db:
-    image: mysql:latest
+    image: altayatalay/db:latest
     restart: unless-stopped
-    volumes:
-      - "./files/db:/docker-entrypoint-initdb.d"
-    command: --default-authentication-plugin=mysql_native_password
-    environment:
-      MYSQL_ROOT_PASSWORD: example
-      MYSQL_USER: user
-      MYSQL_PASSWORD: password
-      MYSQL_DATABASE: world
     healthcheck:
       test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
       timeout: 20s

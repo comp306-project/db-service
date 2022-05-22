@@ -1,3 +1,2 @@
 venv
-files/sql
-__pycache__/
+**/__pycache__/
