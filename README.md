@@ -12,7 +12,7 @@ git clone git@github.com:comp306-project/db-service.git
 ## Run
 ### Docker ile
 ```
-docker-compose up -d --build --force-recreate
+docker-compose up -d --build
 ```
 Usttekini sadece 1 kere runla, run.py veya app klasorunun icindeki dosyalari degistirince suncuyu restartliyo
 
@@ -20,7 +20,7 @@ Containerlar basladiktan sonra docker dekstop uygulamasinda dashboardda cointers
 flask olanin ustune tiklayinca loglari orda gozukucek
 ### Dockersiz
 #### mysql
-files/sql klasorundeki dosyadan world databasini olustur
+db reposundaki sql dosyasindan formula databasini olustur
 
 #### flask
 ```
