@@ -3,9 +3,7 @@ FROM python:3.9
 
 WORKDIR /app
 
-COPY requirements.txt ./
-COPY app/ /app/app
-COPY run.py /app/run.py
+COPY . .
 
 RUN pip install -r requirements.txt
 
