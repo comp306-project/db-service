@@ -1,9 +1,13 @@
+import json
 # Average lap time of a driver for a given race (in seconds)
 # driver found by driver id
 # race found by race id
 def find_average_laptime_by_race_id_and_driver_id(db_cursor, race_id, driver_id):
     query = f"select AVG(LAP.milliseconds)/1000 from LAP where race_id={race_id} and driver_id = {driver_id}"
     db_cursor.execute(query)
+    res = float(db_cursor.fetchall()[0][0])
+    return json.dumps({'result' : res})
+
 
 
 
@@ -65,4 +69,10 @@ def average_race_results_by_pitstop_all_races_at_circuit(db_cursor, circuit_ref)
     GROUP BY Pitstopcount
     HAVING Pitstopcount <= 4"""
     db_cursor.execute(query)
+
+
+if __name__ == '__main__':
+    from app import cursor
+    res = find_average_laptime_by_race_id_and_driver_id(cursor, 1009, 1)
+    print(res)
 
