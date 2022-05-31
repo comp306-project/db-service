@@ -5,8 +5,7 @@ services:
     build: .
     restart: unless-stopped
     volumes:
-      - "./run.py:/app/run.py"
-      - "./app:/app/app"
+      - "./:/app"
     ports:
       - "5000:5000"
     depends_on:
