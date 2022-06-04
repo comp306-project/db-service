@@ -142,15 +142,6 @@ GROUP BY DRIVERS.driver_id
 ORDER BY AVG(RESULTS.position_order) ASC ;
 
 
-SELECT DRIVERS.forename, DRIVERS.surname, RACES.year
-FROM DRIVERS, Constructors, RESULTS
-WHERE DRIVERS.nationality = Constructors.nationality AND DRIVERS.constructor_id = Constructors.constructor_id AND RESULTS.constructor_id = Constructor.constructor_id AND DRIVER.driver_id = RESULTS.driver_id AND DRIVERS.driver_id 
-IN (SELECT DRIVERS.driver_id
-FROM DRIVERS, RESULTS, RACES
-WHERE RESULTS.position_order = 1 AND RESULTS.race_id = RACES.race_id AND RESULTS.driver_id = DRIVERS.driver_id)
-
-
-
 # ======== ATA============
 ### Q1
 # The teams that haven't scored a point with their name, nat, best end position,
