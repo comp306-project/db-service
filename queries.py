@@ -70,6 +70,33 @@ def average_race_results_by_pitstop_all_races_at_circuit(db_cursor, circuit_ref)
     HAVING Pitstopcount <= 4"""
     db_cursor.execute(query)
 
+# The constructors that haven't scored a point with their name, nationality, best end position,
+# first race year and last race year
+def constructors_with_zero_points(db_cursor):
+    query = f"""SELECT Co.name as TeamName, Co.nationality as Nationality, min(Re.position_order) as BestPosition, min(Ra.year) as FirstYear, max(Ra.year) LastYear
+                FROM Constructors as Co, Results as Re, Races as Ra
+                WHERE Co.constructor_id = Re.constructor_id and Ra.race_id = Re.race_id
+                GROUP BY Co.constructor_id
+                HAVING SUM(Re.points) = 0"""
+    db_cursor.execute(query)
+
+# The drivers' total points who raced for the constructors that have won more than 100 races
+def best_drivers_from_best_constructors(db_cursor):
+    query = f"""SELECT D.forename, D.surname, sum(Re.points) as TotalPoints
+                FROM Constructors as Co, Results as Re, Drivers as D
+                WHERE Co.constructor_id = Re.constructor_id
+                and D.driver_id = Re.driver_id
+                and Co.constructor_id in (
+                    SELECT Co.constructor_id
+                    FROM Constructors as Co, Results as Re
+                    WHERE Co.constructor_id = Re.constructor_id and Re.position_order = 1
+                    GROUP BY Co.constructor_id
+                    HAVING count(*) > 100
+                    )
+                GROUP BY D.driver_id
+                ORDER BY sum(Re.points) dESC"""
+    db_cursor.execute(query)
+
 
 if __name__ == '__main__':
     from app import cursor

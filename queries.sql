@@ -142,29 +142,29 @@ GROUP BY DRIVERS.driver_id
 ORDER BY AVG(RESULTS.position_order) ASC ;
 
 
-# ======== ATA============
-### Q1
+# ======== ATA ============
+
 # The teams that haven't scored a point with their name, nat, best end position,
- # first race year and last race year
+# first race year and last race year
 SELECT Co.name as TeamName, Co.nationality as Nationality, min(Re.position_order) as BestPosition, min(Ra.year), max(Ra.year)
 FROM Constructors as Co, Results as Re, Races as Ra
 WHERE Co.constructor_id = Re.constructor_id and Ra.race_id = Re.race_id
 GROUP BY Co.constructor_id
-having SUM(Re.points) = 0;
+HAVING SUM(Re.points) = 0;
 
-
+# The drivers' total points who raced for the constructors that have won more than 100 races
 SELECT D.forename, D.surname, sum(Re.points) as TotalPoints
 FROM Constructors as Co, Results as Re, Drivers as D
 WHERE Co.constructor_id = Re.constructor_id
 and D.driver_id = Re.driver_id
 and Co.constructor_id in (
-SELECT Co.constructor_id
-FROM Constructors as Co, Results as Re
-WHERE Co.constructor_id = Re.constructor_id and Re.position_order = 1
-group by Co.constructor_id
-having count(*) > 100
-)
-group by D.driver_id
-order by sum(Re.points) dESC;
+            SELECT Co.constructor_id
+            FROM Constructors as Co, Results as Re
+            WHERE Co.constructor_id = Re.constructor_id and Re.position_order = 1
+            group by Co.constructor_id
+            HAVING count(*) > 100
+            )
+GROUP BY D.driver_id
+ORDER BY sum(Re.points) dESC;
 
 
