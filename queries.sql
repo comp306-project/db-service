@@ -141,7 +141,7 @@ WHERE RACES.race_id = RESULTS.race_id AND RESULTS.race_id = RACES.race_id AND DR
 GROUP BY DRIVERS.driver_id
 ORDER BY AVG(RESULTS.position_order) ASC ;
 
-SELECT DISTINCT(DRIVERS.forename), DRIVERS.surname, RACES.year, DRIVERS.nationality, COnstructors.nationality
+SELECT DISTINCT(DRIVERS.forename), DRIVERS.surname, RACES.year, DRIVERS.nationality, Constructors.nationality
 FROM DRIVERS, Constructors, RESULTS,RACES
 WHERE DRIVERS.nationality = Constructors.nationality AND RESULTS.race_id = RACES.race_id AND 
 RESULTS.constructor_id = Constructors.constructor_id AND DRIVERS.driver_id = RESULTS.driver_id AND DRIVERS.driver_id IN 
