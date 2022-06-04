@@ -69,6 +69,42 @@ def average_race_results_by_pitstop_all_races_at_circuit(db_cursor, circuit_ref)
     GROUP BY Pitstopcount
     HAVING Pitstopcount <= 4"""
     db_cursor.execute(query)
+    
+    
+   ##=============SEMA==============
+#to find the average pitstop times of the drivers in the specified race
+def average_pitstop_of_drivers(db_cursor, race_id):
+    query = f"select DRIVERS.surname, AVG(PITSTOP.duration) from DRIVERS, PITSTOP where RACES.race_id = PITSTOP.race_id
+             AND DRIVERS.driver_id = PITSTOP.driver_id AND RACES.race_id = PITSTOP.race_id AND RACES.race_id = {race_id}
+             group by RACES.race_id, DRIVERS.driver_id"
+    db_cursor.execute(query)
+    res = float(db_cursor.fetchall()[0][0])
+    return json.dumps({'result' : res})
+
+#to find the average position of the drivers in the given year
+def average_position_of_drivers_ascend(db_cursor, race_year):
+     query = f"select AVG(RESULTS.position_order), DRIVERS.surname
+                from DRIVERS, RESULTS, RACES
+                where RACES.race_id = RESULTS.race_id AND RESULTS.race_id = RACES.race_id AND
+                DRIVERS.driver_id = RESULTS.driver_id AND RACES.year = 2010
+                group by DRIVERS.driver_id
+                order by AVG(RESULTS.position_order) ASC"
+     db_cursor.execute(query)
+     res = float(db_cursor.fetchall()[0][0])
+    return json.dumps({'result' : res})
+
+#to find the driver names, surnames and the year they won
+def the_drivers_for_their_nationality(db_cursor):
+    query = f"select DISTINCT(DRIVERS.forename), DRIVERS.surname, RACES.year, DRIVERS.nationality, Constructors.nationality
+              from DRIVERS, Constructors, RESULTS,RACES
+              where DRIVERS.nationality = Constructors.nationality AND RESULTS.race_id = RACES.race_id AND
+              RESULTS.constructor_id = Constructors.constructor_id AND DRIVERS.driver_id = RESULTS.driver_id AND 
+              DRIVERS.driver_id IN (select DISTINCT(DRIVERS.driver_id) from DRIVERS, RESULTS, RACES
+              where RESULTS.position_order = 1 AND RESULTS.race_id = RACES.race_id AND RESULTS.driver_id = DRIVERS.driver_id)"
+    db_cursor.execute(query)
+    res = float(db_cursor.fetchall()[0][0])
+    return json.dumps({'result' : res})
+
 
 
 if __name__ == '__main__':
