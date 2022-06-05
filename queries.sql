@@ -141,14 +141,13 @@ WHERE DRIVERS.driver_id IN
 		FROM RACES
 		WHERE RACES.year>2010)); 
     
-(SELECT DRIVERS.forename, DRIVERS.surname, RACES.race_id
-	FROM DRIVERS,RESULTS,RACES
-	WHERE DRIVERS.driver_id = RESULTS.driver_id AND RESULTS.position_order <5 AND RESULTS.race_id=RACES.race_id  AND  RACES.race_id IN
-		(SELECT RACES.race_id 
-		FROM RACES
-		WHERE RACES.year>2010 AND RACES.year<2020)
-        GROUP BY RACES.race_id);
-
+SELECT DRIVERS.nationality, COUNT(*) as TotalDriverswhoNeverWon 
+FROM DRIVERS 
+WHERE DRIVERS.driver_id NOT IN 
+	(SELECT DRIVERS.driver_id
+	FROM DRIVERS,RESULTS
+	WHERE DRIVERS.driver_id = RESULTS.driver_id AND RESULTS.position_order =1)
+    GROUP BY DRIVERS.nationality;
 
 # ==========SEMA==============
 SELECT AVG(PITSTOP.duration), DRIVERS.surname
