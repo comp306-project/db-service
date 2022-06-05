@@ -1,4 +1,13 @@
-import json
+
+import simplejson as json
+from functools import wraps
+
+def dec_to_float(func):
+    @wraps(func)
+    def a():
+        pass
+
+
 # Average lap time of a driver for a given race (in seconds)
 # driver found by driver id
 # race found by race id
@@ -6,8 +15,7 @@ def find_average_laptime_by_race_id_and_driver_id(db_cursor, race_id, driver_id)
     query = f"select AVG(LAP.milliseconds)/1000 from LAP where race_id={race_id} and driver_id = {driver_id}"
     db_cursor.execute(query)
     res = db_cursor.fetchall()
-    res = float(list(res[0].values())[0])
-    return json.dumps(res)
+    return json.dumps(res, use_decimal=True)
 
 
 
@@ -18,6 +26,8 @@ def find_average_laptime_by_race_id_and_driver_name(db_cursor, race_id, driver_s
     query = f"""select AVG(LAP.milliseconds)/1000 from LAP, DRIVERS where race_id={race_id} and DRIVERS.surname = "{driver_surname}" 
         AND DRIVERS.driver_id = LAP.driver_id"""
     db_cursor.execute(query)
+    res = db_cursor.fetchall()
+    return json.dumps(res, use_decimal=True)
 
 
 # Average lap time of a driver FOR ALL RACES ON THAT CIRCUIT
@@ -30,6 +40,8 @@ def average_laptime_by_circuit(db_cursor, driver_surname, circuit_ref):
         RACES.circuit_id = CIRCUITS.circuit_id and LAP.race_id = RACES.race_id AND
         CIRCUITS.circuit_ref = '{circuit_ref}'"""
     db_cursor.execute(query)
+    res = db_cursor.fetchall()
+    return json.dumps(res, use_decimal=True)
 
 
 
@@ -42,6 +54,8 @@ def average_pace_difference_by_race(db_cursor, first_driver_id, second_driver_id
     WHERE lap1.race_id = {race_id} AND lap2.race_id = {race_id} AND
         lap1.driver_id = {first_driver_id} and lap2.driver_id = {second_driver_id}"""
     db_cursor.execute(query)
+    res = db_cursor.fetchall()
+    return json.dumps(res, use_decimal=True)
 
 
 # Average race results grouped by number of pit stops made for a race (this is for a single race)
@@ -56,7 +70,7 @@ def average_race_results_by_pitstop_single_race(db_cursor, race_id):
     HAVING Pitstopcount <= 4;"""
     db_cursor.execute(query)
     res = db_cursor.fetchall()
-    print(res)
+    return json.dumps(res, use_decimal=True)
 
 
 # Average race results grouped by number of pit stops made for ALL RACES ON A CIRCUIT
@@ -71,6 +85,8 @@ def average_race_results_by_pitstop_all_races_at_circuit(db_cursor, circuit_ref)
     GROUP BY Pitstopcount
     HAVING Pitstopcount <= 4"""
     db_cursor.execute(query)
+    res = db_cursor.fetchall()
+    return json.dumps(res, use_decimal=True)
     
 
 ##=============OYA==============
@@ -80,11 +96,15 @@ def find_countries_wins(db_cursor):
     query = f"""SELECT DRIVERS.nationality, COUNT(*) as TotalRaceWins FROM DRIVERS, RESULTS WHERE DRIVERS.driver_id=RESULTS.driver_id AND RESULTS.position_order = 1 
                 GROUP BY DRIVERS.nationality ORDER BY COUNT(*) DESC"""
     db_cursor.execute(query)
+    res = db_cursor.fetchall()
+    return json.dumps(res, use_decimal=True)
 
 # Showing a drivers name and surname for a selected country
 def find_country_drivers(db_cursor, nationality):
     query = f"""SELECT DRIVERS.forename, DRIVERS.surname FROM DRIVERS WHERE DRIVERS.nationality = {nationality};"""
     db_cursor.execute(query)
+    res = db_cursor.fetchall()
+    return json.dumps(res, use_decimal=True)
 
 # Showing drivers name and surname who
 # have been in first specified positions in any race starting from a specified date 
@@ -99,6 +119,8 @@ def find_drivers_who_have_been_in_position(db_cursor, position, year):
             WHERE RACES.year>{year}))"""
 
     db_cursor.execute(query)
+    res = db_cursor.fetchall()
+    return json.dumps(res, use_decimal=True)
 
 # Showing total number of drivers from each country who
 # never position as 1
@@ -109,6 +131,8 @@ def find_countries_wins(db_cursor, position):
 	WHERE DRIVERS.driver_id = RESULTS.driver_id AND RESULTS.position_order ={position})
     GROUP BY DRIVERS.nationality))""" 
     db_cursor.execute(query)  
+    res = db_cursor.fetchall()
+    return json.dumps(res, use_decimal=True)
 
 
    ##=============SEMA==============
@@ -118,20 +142,20 @@ def average_pitstop_of_drivers(db_cursor, race_id):
              AND DRIVERS.driver_id = PITSTOP.driver_id AND RACES.race_id = PITSTOP.race_id AND RACES.race_id = {race_id}
              group by RACES.race_id, DRIVERS.driver_id"""
     db_cursor.execute(query)
-    res = float(db_cursor.fetchall()[0][0])
-    return json.dumps({'result' : res})
+    res = db_cursor.fetchall()
+    return json.dumps(res, use_decimal=True)
 
 #to find the average position of the drivers in the given year
 def average_position_of_drivers_ascend(db_cursor, race_year):
-     query = f"""select AVG(RESULTS.position_order), DRIVERS.surname
-                from DRIVERS, RESULTS, RACES
-                where RACES.race_id = RESULTS.race_id AND RESULTS.race_id = RACES.race_id AND
-                DRIVERS.driver_id = RESULTS.driver_id AND RACES.year = 2010
-                group by DRIVERS.driver_id
-                order by AVG(RESULTS.position_order) ASC"""
-     db_cursor.execute(query)
-     res = float(db_cursor.fetchall()[0][0])
-     return json.dumps({'result' : res})
+    query = f"""select AVG(RESULTS.position_order), DRIVERS.surname
+            from DRIVERS, RESULTS, RACES
+            where RACES.race_id = RESULTS.race_id AND RESULTS.race_id = RACES.race_id AND
+            DRIVERS.driver_id = RESULTS.driver_id AND RACES.year = 2010
+            group by DRIVERS.driver_id
+            order by AVG(RESULTS.position_order) ASC"""
+    db_cursor.execute(query)
+    res = db_cursor.fetchall()
+    return json.dumps(res, use_decimal=True)
 
 #to find the driver names, surnames and the year they won
 def the_drivers_for_their_nationality(db_cursor):
@@ -142,8 +166,8 @@ def the_drivers_for_their_nationality(db_cursor):
               DRIVERS.driver_id IN (select DISTINCT(DRIVERS.driver_id) from DRIVERS, RESULTS, RACES
               where RESULTS.position_order = 1 AND RESULTS.race_id = RACES.race_id AND RESULTS.driver_id = DRIVERS.driver_id)"""
     db_cursor.execute(query)
-    res = float(db_cursor.fetchall()[0][0])
-    return json.dumps({'result' : res})
+    res = db_cursor.fetchall()
+    return json.dumps(res, use_decimal=True)
 
 
 # The constructors that haven't scored a point with their name, nationality, best end position,
@@ -178,5 +202,5 @@ if __name__ == '__main__':
     from app import cursor
     res = find_average_laptime_by_race_id_and_driver_id(cursor, 1009, 1)
     print(res)
-    average_race_results_by_pitstop_single_race(cursor, 1000)
-
+    #average_race_results_by_pitstop_single_race(cursor, 1000)
+    average_race_results_by_pitstop_all_races_at_circuit(cursor, 'Istanbul Park')
