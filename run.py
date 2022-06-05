@@ -81,7 +81,20 @@ def find_country_drivers():
     res = queries.find_country_drivers(cursor, nationality)
     return jsonify(res), 200
 
+@app.route('/find_drivers_who_have_been_in_position', methods=['POST'])
+def find_drivers_who_have_been_in_position():
+    data = request.form
+    year = float(data['year'])
+    res = queries.find_drivers_who_have_been_in_position(cursor, year)
+    return jsonify(res), 200
 
+
+@app.route('/find_countries_wins', methods=['POST'])
+def find_countries_wins():
+    data = request.form
+    position = float(data['position'])
+    res = queries.find_countries_wins(cursor, position)
+    return jsonify(res), 200
 
 
 if __name__ == '__main__':

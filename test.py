@@ -24,5 +24,12 @@ print(r.json())
 r = requests.post(f'{base_url}/find_country_drivers', data={'nationality': 'British'})
 print(r.json())
 
+r = requests.post(f'{base_url}/find_drivers_who_have_been_in_position', data={'year': '2014'})
+print(r.json())
+
+r = requests.post(f'{base_url}/find_countries_wins', data={'position': '1'})
+print(r.json())
+
+
 
 
