@@ -56,5 +56,39 @@ def average_race_results_by_pitstop_single_race():
     res = queries.average_pace_difference_by_race(cursor, race_id)
     return jsonify(res), 200
 
+
+
+@app.route('/average_race_results_by_pitstop_all_races_at_circuit', methods=['POST'])
+def average_race_results_by_pitstop_all_races_at_circuit():
+    data = request.form
+    circuit_ref = data['race_id']
+    res = queries.average_race_results_by_pitstop_all_races_at_circuit(cursor, circuit_ref)
+    return jsonify(res), 200
+
+
+
+@app.route('/find_countries_wins', methods=['POST'])
+def find_countries_wins():
+    data = request.form
+    res = queries.find_countries_wins(cursor)
+    return jsonify(res), 200
+
+
+@app.route('/find_country_drivers', methods=['POST'])
+def find_country_drivers():
+    data = request.form
+    nationality = data['nationality']
+    res = queries.find_country_drivers(cursor, nationality)
+    return jsonify(res), 200
+
+
+
+
 if __name__ == '__main__':
    app.run(host='0.0.0.0', port='5000', debug=True)
+
+
+
+
+
+   

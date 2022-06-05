@@ -14,3 +14,15 @@ print(r.json())
 
 r = requests.post(f'{base_url}/average_race_results_by_pitstop_single_race', data={'race_id': 1000})
 print(r.json())
+
+r = requests.post(f'{base_url}/average_race_results_by_pitstop_all_races_at_circuit', data={'circuit_ref': 'Istanbul Park'})
+print(r.json())
+
+r = requests.post(f'{base_url}/find_countries_wins')
+print(r.json())
+
+r = requests.post(f'{base_url}/find_country_drivers', data={'nationality': 'British'})
+print(r.json())
+
+
+
