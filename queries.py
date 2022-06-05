@@ -9,8 +9,6 @@ def find_average_laptime_by_race_id_and_driver_id(db_cursor, race_id, driver_id)
     return json.dumps({'result' : res})
 
 
-
-
 # Average lap time of a driver for a given race (in seconds)
 # driver found by last name
 # race found by race id
@@ -70,7 +68,45 @@ def average_race_results_by_pitstop_all_races_at_circuit(db_cursor, circuit_ref)
     HAVING Pitstopcount <= 4"""
     db_cursor.execute(query)
     
-    
+
+##=============OYA==============
+
+# Showing every countries number of races they won
+def find_countries_wins(db_cursor):
+    query = f"""SELECT DRIVERS.nationality, COUNT(*) as TotalRaceWins FROM DRIVERS, RESULTS WHERE DRIVERS.driver_id=RESULTS.driver_id AND RESULTS.position_order = 1 
+                GROUP BY DRIVERS.nationality ORDER BY COUNT(*) DESC"""
+    db_cursor.execute(query)
+
+# Showing a drivers name and surname for a selected country
+def find_country_drivers(db_cursor, nationality):
+    query = f"""SELECT DRIVERS.forename, DRIVERS.surname FROM DRIVERS WHERE DRIVERS.nationality = {nationality};"""
+    db_cursor.execute(query)
+
+# Showing drivers name and surname who
+# have been in first specified positions in any race starting from a specified date 
+
+def find_drivers_who_have_been_in_position(db_cursor, position, year):
+    query = f"""SELECT DRIVERS.forename, DRIVERS.surname, DRIVERS.nationality FROM DRIVERS WHERE DRIVERS.driver_id IN 
+        (SELECT DRIVERS.driver_id
+        FROM DRIVERS,RESULTS,RACES
+        WHERE DRIVERS.driver_id = RESULTS.driver_id AND RESULTS.position_order <{position} AND RESULTS.race_id=RACES.race_id  AND  RACES.race_id IN
+            (SELECT RACES.race_id 
+            FROM RACES
+            WHERE RACES.year>{year}))"""
+
+    db_cursor.execute(query)
+
+# Showing total number of drivers from each country who
+# never position as 1
+def find_countries_wins(db_cursor, position):
+    query = f"""SELECT DRIVERS.nationality, COUNT(*) as TotalDriverswhoNeverWon FROM DRIVERS WHERE DRIVERS.driver_id NOT IN 
+	(SELECT DRIVERS.driver_id
+	FROM DRIVERS,RESULTS
+	WHERE DRIVERS.driver_id = RESULTS.driver_id AND RESULTS.position_order ={position})
+    GROUP BY DRIVERS.nationality))""" 
+    db_cursor.execute(query)  
+
+
    ##=============SEMA==============
 #to find the average pitstop times of the drivers in the specified race
 def average_pitstop_of_drivers(db_cursor, race_id):
