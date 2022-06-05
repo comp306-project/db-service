@@ -9,6 +9,7 @@ def find_average_laptime_by_race_id_and_driver_id(db_cursor, race_id, driver_id)
     return json.dumps({'result' : res})
 
 
+
 # Average lap time of a driver for a given race (in seconds)
 # driver found by last name
 # race found by race id
