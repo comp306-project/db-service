@@ -7,5 +7,5 @@ mydb = mysql.connector.connect(
   auth_plugin='mysql_native_password',
 )
 
-cursor = mydb.cursor()
+cursor = mydb.cursor(dictionary=True)
 cursor.execute("USE formula")
