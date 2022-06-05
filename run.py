@@ -1,9 +1,14 @@
 
 from flask import Flask, jsonify, request
+from flask_cors import CORS
+import json
+
 from app import cursor
 import queries
 
 app = Flask(__name__)
+cors = CORS(app, resources={'/*':{'origins': 'http://localhost:3000'}}) 
+
 
 @app.route('/databases')
 def databases():
@@ -24,9 +29,13 @@ def CIRCUITS():
     return jsonify(result), 200
 
 
+from flask import current_app
+print = lambda *args: current_app.logger.info(*args)
+
 @app.route('/find_average_laptime_by_race_id_and_driver_id', methods=['POST'])
 def find_average_laptime_by_race_id_and_driver_id():
-    data = request.form
+    data = json.loads(request.json)
+    print(data, type(data))
     race_id, driver_id = float(data['race_id']), float(data['driver_id'])
     res = queries.find_average_laptime_by_race_id_and_driver_id(cursor, race_id, driver_id)
     return jsonify(res), 200
@@ -34,7 +43,7 @@ def find_average_laptime_by_race_id_and_driver_id():
 
 @app.route('/average_race_results_by_pitstop_all_races_at_circuit', methods=['POST'])
 def average_race_results_by_pitstop_all_races_at_circuit():
-    data = request.form
+    data = json.loads(request.json)
     circuit_ref = str(data['circuit_ref'])
     res = queries.find_average_laptime_by_race_id_and_driver_id(cursor, circuit_ref)
     return jsonify(res), 200
@@ -42,7 +51,7 @@ def average_race_results_by_pitstop_all_races_at_circuit():
 
 @app.route('/average_pace_difference_by_race', methods=['POST'])
 def average_pace_difference_by_race():
-    data = request.form
+    data = json.loads(request.json)
     first_driver_id, second_driver_id, race_id = float(data['first_driver_id']), float(data['second_driver_id'], float(data['race_id']))
     res = queries.average_pace_difference_by_race(cursor, first_driver_id, second_driver_id, race_id)
     return jsonify(res), 200
@@ -51,7 +60,7 @@ def average_pace_difference_by_race():
 
 @app.route('/average_race_results_by_pitstop_single_race', methods=['POST'])
 def average_race_results_by_pitstop_single_race():
-    data = request.form
+    data = json.loads(request.json)
     race_id = float(data['race_id'])
     res = queries.average_pace_difference_by_race(cursor, race_id)
     return jsonify(res), 200
@@ -60,7 +69,7 @@ def average_race_results_by_pitstop_single_race():
 
 @app.route('/average_race_results_by_pitstop_all_races_at_circuit', methods=['POST'])
 def average_race_results_by_pitstop_all_races_at_circuit():
-    data = request.form
+    data = json.loads(request.json)
     circuit_ref = data['circuit_ref']
     res = queries.average_race_results_by_pitstop_all_races_at_circuit(cursor, circuit_ref)
     return jsonify(res), 200
@@ -69,21 +78,21 @@ def average_race_results_by_pitstop_all_races_at_circuit():
 
 @app.route('/find_countries_wins', methods=['POST'])
 def find_countries_wins():
-    data = request.form
+    data = json.loads(request.json)
     res = queries.find_countries_wins(cursor)
     return jsonify(res), 200
 
 
 @app.route('/find_country_drivers', methods=['POST'])
 def find_country_drivers():
-    data = request.form
+    data = json.loads(request.json)
     nationality = data['nationality']
     res = queries.find_country_drivers(cursor, nationality)
     return jsonify(res), 200
 
 @app.route('/find_drivers_who_have_been_in_position', methods=['POST'])
 def find_drivers_who_have_been_in_position():
-    data = request.form
+    data = json.loads(request.json)
     year = float(data['year'])
     res = queries.find_drivers_who_have_been_in_position(cursor, year)
     return jsonify(res), 200
@@ -91,7 +100,7 @@ def find_drivers_who_have_been_in_position():
 
 @app.route('/find_countries_wins', methods=['POST'])
 def find_countries_wins():
-    data = request.form
+    data = json.loads(request.json)
     position = float(data['position'])
     res = queries.find_countries_wins(cursor, position)
     return jsonify(res), 200
@@ -99,21 +108,21 @@ def find_countries_wins():
 
 @app.route('/average_pitstop_of_drivers', methods=['POST'])
 def average_pitstop_of_drivers():
-    data = request.form
+    data = json.loads(request.json)
     race_id = float(data['race_id'])
     res = queries.average_pitstop_of_drivers(cursor, race_id, driver_id)
     return jsonify(res), 200
 
 @app.route('/average_position_of_drivers_ascend', methods=['POST'])
 def average_position_of_drivers_ascend():
-    data = request.form
+    data = json.loads(request.json)
     race_year = float(data['race_year'])
     res = queries.average_position_of_drivers_ascend(cursor, race_year)
     return jsonify(res), 200
 
 @app.route('/the_drivers_for_their_nationality', methods=['POST'])
 def the_drivers_for_their_nationality():
-    data = request.form
+    data = json.loads(request.json)
     res = queries.the_drivers_for_their_nationality(cursor)
     return jsonify(res), 200
 
