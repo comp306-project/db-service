@@ -7,7 +7,7 @@ from app import cursor
 import queries
 
 app = Flask(__name__)
-cors = CORS(app, resources={'/*':{'origins': 'http://localhost:3000'}}) 
+#cors = CORS(app, resources={'/*':{'origins': 'http://localhost:3000'}}) 
 
 
 @app.route('/databases')
@@ -41,14 +41,6 @@ def find_average_laptime_by_race_id_and_driver_id():
     return jsonify(res), 200
 
 
-@app.route('/average_race_results_by_pitstop_all_races_at_circuit', methods=['POST'])
-def average_race_results_by_pitstop_all_races_at_circuit():
-    data = json.loads(request.json)
-    circuit_ref = str(data['circuit_ref'])
-    res = queries.find_average_laptime_by_race_id_and_driver_id(cursor, circuit_ref)
-    return jsonify(res), 200
-
-
 @app.route('/average_pace_difference_by_race', methods=['POST'])
 def average_pace_difference_by_race():
     data = json.loads(request.json)
@@ -75,7 +67,6 @@ def average_race_results_by_pitstop_all_races_at_circuit():
     return jsonify(res), 200
 
 
-
 @app.route('/find_countries_wins', methods=['POST'])
 def find_countries_wins():
     data = json.loads(request.json)
@@ -96,15 +87,6 @@ def find_drivers_who_have_been_in_position():
     year = float(data['year'])
     res = queries.find_drivers_who_have_been_in_position(cursor, year)
     return jsonify(res), 200
-
-
-@app.route('/find_countries_wins', methods=['POST'])
-def find_countries_wins():
-    data = json.loads(request.json)
-    position = float(data['position'])
-    res = queries.find_countries_wins(cursor, position)
-    return jsonify(res), 200
-
 
 @app.route('/average_pitstop_of_drivers', methods=['POST'])
 def average_pitstop_of_drivers():
