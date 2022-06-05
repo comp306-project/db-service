@@ -121,11 +121,33 @@ ORDER BY COUNT(*) DESC;
 
 
 # Showing a drivers name and surname for
-# a selected country
+# a selected countryCIRCUITS
 SELECT DRIVERS.forename, DRIVERS.surname
 FROM DRIVERS
 WHERE DRIVERS.nationality = "British";
 
+
+# Showing drivers name and surname who
+# have been in first 10 positions in any race starting from a specified date 
+
+
+SELECT DRIVERS.forename, DRIVERS.surname, DRIVERS.nationality
+FROM DRIVERS
+WHERE DRIVERS.driver_id IN 
+	(SELECT DRIVERS.driver_id
+	FROM DRIVERS,RESULTS,RACES
+	WHERE DRIVERS.driver_id = RESULTS.driver_id AND RESULTS.position_order <10 AND RESULTS.race_id=RACES.race_id  AND  RACES.race_id IN
+		(SELECT RACES.race_id 
+		FROM RACES
+		WHERE RACES.year>2010)); 
+    
+(SELECT DRIVERS.forename, DRIVERS.surname, RACES.race_id
+	FROM DRIVERS,RESULTS,RACES
+	WHERE DRIVERS.driver_id = RESULTS.driver_id AND RESULTS.position_order <5 AND RESULTS.race_id=RACES.race_id  AND  RACES.race_id IN
+		(SELECT RACES.race_id 
+		FROM RACES
+		WHERE RACES.year>2010 AND RACES.year<2020)
+        GROUP BY RACES.race_id);
 
 
 # ==========SEMA==============
