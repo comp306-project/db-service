@@ -1,5 +1,7 @@
-from flask import Flask, jsonify
+
+from flask import Flask, jsonify, request
 from app import cursor
+import queries
 
 app = Flask(__name__)
 
@@ -21,6 +23,13 @@ def CIRCUITS():
     result = {res[0] : [row for row in res[1:]] for res in cursor.fetchall()}
     return jsonify(result), 200
 
+
+@app.route('/find_average_laptime_by_race_id_and_driver_id', methods=['POST'])
+def find_average_laptime_by_race_id_and_driver_id():
+    data = request.form
+    race_id, driver_id = float(data['race_id']), float(data['driver_id'])
+    res = queries.find_average_laptime_by_race_id_and_driver_id(cursor, race_id, driver_id)
+    return jsonify(res), 200
 
 
 if __name__ == '__main__':
