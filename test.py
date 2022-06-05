@@ -32,4 +32,16 @@ print(r.json())
 
 
 
+r = requests.post(f'{base_url}/average_pitstop_of_drivers', data={'race_id' : 1002})
+print(r.json())
+
+
+r = requests.post(f'{base_url}/average_position_of_drivers_ascend', data={'race_year' : 2001})
+print(r.json())
+
+
+r = requests.post(f'{base_url}/the_drivers_for_their_nationality')
+print(r.json())
+
+
 
