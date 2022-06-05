@@ -109,11 +109,11 @@ def find_country_drivers(db_cursor, nationality):
 # Showing drivers name and surname who
 # have been in first specified positions in any race starting from a specified date 
 
-def find_drivers_who_have_been_in_position(db_cursor, position, year):
+def find_drivers_who_have_been_in_position(db_cursor, year):
     query = f"""SELECT DRIVERS.forename, DRIVERS.surname, DRIVERS.nationality FROM DRIVERS WHERE DRIVERS.driver_id IN 
         (SELECT DRIVERS.driver_id
         FROM DRIVERS,RESULTS,RACES
-        WHERE DRIVERS.driver_id = RESULTS.driver_id AND RESULTS.position_order <{position} AND RESULTS.race_id=RACES.race_id  AND  RACES.race_id IN
+        WHERE DRIVERS.driver_id = RESULTS.driver_id AND RESULTS.position_order < 4 AND RESULTS.race_id=RACES.race_id  AND  RACES.race_id IN
             (SELECT RACES.race_id 
             FROM RACES
             WHERE RACES.year>{year}))"""
@@ -150,7 +150,7 @@ def average_position_of_drivers_ascend(db_cursor, race_year):
     query = f"""select AVG(RESULTS.position_order), DRIVERS.surname
             from DRIVERS, RESULTS, RACES
             where RACES.race_id = RESULTS.race_id AND RESULTS.race_id = RACES.race_id AND
-            DRIVERS.driver_id = RESULTS.driver_id AND RACES.year = 2010
+            DRIVERS.driver_id = RESULTS.driver_id AND RACES.year = {race_year}
             group by DRIVERS.driver_id
             order by AVG(RESULTS.position_order) ASC"""
     db_cursor.execute(query)
@@ -159,7 +159,7 @@ def average_position_of_drivers_ascend(db_cursor, race_year):
 
 #to find the driver names, surnames and the year they won
 def the_drivers_for_their_nationality(db_cursor):
-    query = f"""select DISTINCT(DRIVERS.forename), DRIVERS.surname, RACES.year, DRIVERS.nationality, Constructors.nationality
+    query = f"""select DISTINCT(DRIVERS.driver_id), DRIVERS.forename, DRIVERS.surname, RACES.year, DRIVERS.nationality, Constructors.nationality
               from DRIVERS, Constructors, RESULTS,RACES
               where DRIVERS.nationality = Constructors.nationality AND RESULTS.race_id = RACES.race_id AND
               RESULTS.constructor_id = Constructors.constructor_id AND DRIVERS.driver_id = RESULTS.driver_id AND 
@@ -179,9 +179,11 @@ def constructors_with_zero_points(db_cursor):
                 GROUP BY Co.constructor_id
                 HAVING SUM(Re.points) = 0"""
     db_cursor.execute(query)
+    res = db_cursor.fetchall()
+    return json.dumps(res, use_decimal=True)
 
 # The drivers' total points who raced for the constructors that have won more than 100 races
-def best_drivers_from_best_constructors(db_cursor):
+def best_drivers_from_best_constructors(db_cursor,won_count):
     query = f"""SELECT D.forename, D.surname, sum(Re.points) as TotalPoints
                 FROM Constructors as Co, Results as Re, Drivers as D
                 WHERE Co.constructor_id = Re.constructor_id
@@ -191,16 +193,23 @@ def best_drivers_from_best_constructors(db_cursor):
                     FROM Constructors as Co, Results as Re
                     WHERE Co.constructor_id = Re.constructor_id and Re.position_order = 1
                     GROUP BY Co.constructor_id
-                    HAVING count(*) > 100
+                    HAVING count(*) > {won_count}
                     )
                 GROUP BY D.driver_id
                 ORDER BY sum(Re.points) dESC"""
     db_cursor.execute(query)
+    res = db_cursor.fetchall()
+    return json.dumps(res, use_decimal=True)
 
 
 if __name__ == '__main__':
     from app import cursor
     res = find_average_laptime_by_race_id_and_driver_id(cursor, 1009, 1)
     print(res)
-    #average_race_results_by_pitstop_single_race(cursor, 1000)
+    average_race_results_by_pitstop_single_race(cursor, 1000)
     average_race_results_by_pitstop_all_races_at_circuit(cursor, 'Istanbul Park')
+    best_drivers_from_best_constructors(cursor,3)
+    constructors_with_zero_points(cursor)
+    find_drivers_who_have_been_in_position(cursor, 2014)
+    best_drivers_from_best_constructors(cursor,5)
+
