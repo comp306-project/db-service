@@ -32,5 +32,29 @@ def find_average_laptime_by_race_id_and_driver_id():
     return jsonify(res), 200
 
 
+@app.route('/average_race_results_by_pitstop_all_races_at_circuit', methods=['POST'])
+def average_race_results_by_pitstop_all_races_at_circuit():
+    data = request.form
+    circuit_ref = str(data['circuit_ref'])
+    res = queries.find_average_laptime_by_race_id_and_driver_id(cursor, circuit_ref)
+    return jsonify(res), 200
+
+
+@app.route('/average_pace_difference_by_race', methods=['POST'])
+def average_pace_difference_by_race():
+    data = request.form
+    first_driver_id, second_driver_id, race_id = float(data['first_driver_id']), float(data['second_driver_id'], float(data['race_id']))
+    res = queries.average_pace_difference_by_race(cursor, first_driver_id, second_driver_id, race_id)
+    return jsonify(res), 200
+
+
+
+@app.route('/average_race_results_by_pitstop_single_race', methods=['POST'])
+def average_race_results_by_pitstop_single_race():
+    data = request.form
+    race_id = float(data['race_id'])
+    res = queries.average_pace_difference_by_race(cursor, race_id)
+    return jsonify(res), 200
+
 if __name__ == '__main__':
    app.run(host='0.0.0.0', port='5000', debug=True)
