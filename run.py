@@ -61,7 +61,7 @@ def average_race_results_by_pitstop_single_race():
 @app.route('/average_race_results_by_pitstop_all_races_at_circuit', methods=['POST'])
 def average_race_results_by_pitstop_all_races_at_circuit():
     data = request.form
-    circuit_ref = data['race_id']
+    circuit_ref = data['circuit_ref']
     res = queries.average_race_results_by_pitstop_all_races_at_circuit(cursor, circuit_ref)
     return jsonify(res), 200
 
