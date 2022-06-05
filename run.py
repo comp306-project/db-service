@@ -97,6 +97,27 @@ def find_countries_wins():
     return jsonify(res), 200
 
 
+@app.route('/average_pitstop_of_drivers', methods=['POST'])
+def average_pitstop_of_drivers():
+    data = request.form
+    race_id = float(data['race_id'])
+    res = queries.average_pitstop_of_drivers(cursor, race_id, driver_id)
+    return jsonify(res), 200
+
+@app.route('/average_position_of_drivers_ascend', methods=['POST'])
+def average_position_of_drivers_ascend():
+    data = request.form
+    race_year = float(data['race_year'])
+    res = queries.average_position_of_drivers_ascend(cursor, race_year)
+    return jsonify(res), 200
+
+@app.route('/the_drivers_for_their_nationality', methods=['POST'])
+def the_drivers_for_their_nationality():
+    data = request.form
+    res = queries.the_drivers_for_their_nationality(cursor)
+    return jsonify(res), 200
+
+
 if __name__ == '__main__':
    app.run(host='0.0.0.0', port='5000', debug=True)
 
