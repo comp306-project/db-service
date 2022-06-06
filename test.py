@@ -30,11 +30,24 @@ print(r.json())
 r = requests.post(f'{base_url}/average_pitstop_of_drivers', json={'race_id' : 1002})
 print(r.json())
 
-r = requests.post(f'{base_url}/average_position_of_drivers_ascend', json={'race_year' : 2001})
-print(r.json())
-
 r = requests.post(f'{base_url}/the_drivers_for_their_nationality')
 print(r.json())
+
+r = requests.post(f'{base_url}/average_position_of_drivers_ascend', data={'year': '2014'})
+print(r.json())
+
+r = requests.post(f'{base_url}/constructors_with_zero_points')
+print(r.json())
+
+r = requests.post(f'{base_url}/best_drivers_from_best_constructors', data={'won_count': '3'})
+print(r.json())
+
+"""
+r = requests.post(f'{base_url}/average_laptime_by_circuit',data={'driver_surname': 'Hamilton','circuit_ref': 'Istanbul Park'})
+print(r.json())
+
+"""
+
 
 
 
