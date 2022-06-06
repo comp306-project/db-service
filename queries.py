@@ -101,7 +101,7 @@ def find_countries_wins(db_cursor):
 
 # Showing a drivers name and surname for a selected country
 def find_country_drivers(db_cursor, nationality):
-    query = f"""SELECT DRIVERS.forename, DRIVERS.surname FROM DRIVERS WHERE DRIVERS.nationality = {nationality};"""
+    query = f"""SELECT DRIVERS.forename, DRIVERS.surname FROM DRIVERS WHERE DRIVERS.nationality = '{nationality}';"""
     db_cursor.execute(query)
     res = db_cursor.fetchall()
     return json.dumps(res, use_decimal=True)
