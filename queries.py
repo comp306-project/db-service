@@ -128,8 +128,8 @@ def find_countries_wins(db_cursor, position):
     query = f"""SELECT DRIVERS.nationality, COUNT(*) as TotalDriverswhoNeverWon FROM DRIVERS WHERE DRIVERS.driver_id NOT IN 
 	(SELECT DRIVERS.driver_id
 	FROM DRIVERS,RESULTS
-	WHERE DRIVERS.driver_id = RESULTS.driver_id AND RESULTS.position_order ={position})
-    GROUP BY DRIVERS.nationality))""" 
+	WHERE DRIVERS.driver_id = RESULTS.driver_id AND RESULTS.position_order = {position})
+    GROUP BY DRIVERS.nationality""" 
     db_cursor.execute(query)  
     res = db_cursor.fetchall()
     return json.dumps(res, use_decimal=True)
