@@ -56,16 +56,13 @@ def average_race_results_by_pitstop_all_races_at_circuit():
     return jsonify(res), 200
 
 
-@app.route('/find_countries_wins', methods=['POST'])
-def find_countries_wins():
+@app.route('/find_countries_all_wins', methods=['POST'])
+def find_countries_all_wins():
     data = request.json
     if not type(data) == dict:
         data = json.loads(data)
-    position = float(data['position'])
-    print(position)
-    res = queries.find_countries_wins(cursor, position)
-    print(res)
-    return jsonify(res), 200
+    res = queries.find_countries_all_wins(cursor)
+    return json.dumps(res, use_decimal=True)
 
 
 @app.route('/find_country_drivers', methods=['POST'])
@@ -85,6 +82,15 @@ def find_drivers_who_have_been_in_position():
     year = float(data['year'])
     res = queries.find_drivers_who_have_been_in_position(cursor, year)
     return jsonify(res), 200
+
+@app.route('/find_countries_wins', methods=['POST'])
+def find_countries_wins():
+    data = request.json
+    if not type(data) == dict:
+        data = json.loads(data)
+    position = float(data['position'])
+    res = queries.find_countries_wins(cursor, position)
+    return json.dumps(res, use_decimal=True)
 
 @app.route('/average_pitstop_of_drivers', methods=['POST'])
 def average_pitstop_of_drivers():
@@ -112,6 +118,32 @@ def the_drivers_for_their_nationality():
     res = queries.the_drivers_for_their_nationality(cursor)
     return jsonify(res), 200
 
+@app.route('/constructors_with_zero_points', methods=['POST'])
+def constructors_with_zero_points():
+    data = request.json
+    if not type(data) == dict:
+        data = json.loads(data)
+    res = queries.constructors_with_zero_points(cursor)
+    return jsonify(res), 200
+
+@app.route('/best_drivers_from_best_constructors', methods=['POST'])
+def best_drivers_from_best_constructors():
+    data = request.json
+    if not type(data) == dict:
+        data = json.loads(data)
+    won_count = float(data['won_count'])
+    res = queries.best_drivers_from_best_constructors(cursor,won_count)
+    return jsonify(res), 200
+
+@app.route('/average_laptime_by_circuit', methods=['POST'])
+def average_laptime_by_circuit():
+    data = request.json
+    if not type(data) == dict:
+        data = json.loads(data)
+    driver_surname = data['driver_surname']
+    circuit_ref = data['circuit_ref']
+    res = queries.average_laptime_by_circuit(cursor, driver_surname, circuit_ref)
+    return jsonify(res), 200
 
 if __name__ == '__main__':
    app.run(host='0.0.0.0', port='5000', debug=True)

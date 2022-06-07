@@ -15,7 +15,7 @@ print(r.json())
 r = requests.post(f'{base_url}/average_race_results_by_pitstop_single_race', json={'race_id': 1000})
 print(r.json())
 
-r = requests.post(f'{base_url}/average_race_results_by_pitstop_all_races_at_circuit', json={'circuit_ref': 'Istanbul Park'})
+r = requests.post(f'{base_url}/find_countries_all_wins')
 print(r.json())
 
 r = requests.post(f'{base_url}/find_country_drivers', json={'nationality': 'British'})
@@ -42,11 +42,9 @@ print(r.json())
 r = requests.post(f'{base_url}/best_drivers_from_best_constructors', data={'won_count': '3'})
 print(r.json())
 
-"""
 r = requests.post(f'{base_url}/average_laptime_by_circuit',data={'driver_surname': 'Hamilton','circuit_ref': 'Istanbul Park'})
 print(r.json())
 
-"""
 
 
 

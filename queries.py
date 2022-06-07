@@ -92,7 +92,7 @@ def average_race_results_by_pitstop_all_races_at_circuit(db_cursor, circuit_ref)
 ##=============OYA==============
 
 # Showing every countries number of races they won
-def find_countries_wins(db_cursor):
+def find_countries_all_wins(db_cursor):
     query = f"""SELECT DRIVERS.nationality, COUNT(*) as TotalRaceWins FROM DRIVERS, RESULTS WHERE DRIVERS.driver_id=RESULTS.driver_id AND RESULTS.position_order = 1 
                 GROUP BY DRIVERS.nationality ORDER BY COUNT(*) DESC"""
     db_cursor.execute(query)
