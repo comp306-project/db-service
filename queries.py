@@ -1,12 +1,5 @@
 
 import simplejson as json
-from functools import wraps
-
-def dec_to_float(func):
-    @wraps(func)
-    def a():
-        pass
-
 
 # Average lap time of a driver for a given race (in seconds)
 # driver found by driver id
@@ -129,7 +122,7 @@ def find_countries_wins(db_cursor, position):
 	(SELECT DRIVERS.driver_id
 	FROM DRIVERS,RESULTS
 	WHERE DRIVERS.driver_id = RESULTS.driver_id AND RESULTS.position_order = "{position}")
-    GROUP BY DRIVERS.nationality))""" 
+    GROUP BY DRIVERS.nationality""" 
     db_cursor.execute(query)  
     res = db_cursor.fetchall()
     return json.dumps(res, use_decimal=True)
@@ -138,7 +131,7 @@ def find_countries_wins(db_cursor, position):
    ##=============SEMA==============
 #to find the average pitstop times of the drivers in the specified race
 def average_pitstop_of_drivers(db_cursor, race_id):
-    query = f"""select DRIVERS.surname, AVG(PITSTOP.duration) from DRIVERS, PITSTOP where RACES.race_id = PITSTOP.race_id
+    query = f"""select DRIVERS.surname, AVG(PITSTOP.duration) from DRIVERS, RACES, PITSTOP where RACES.race_id = PITSTOP.race_id
              AND DRIVERS.driver_id = PITSTOP.driver_id AND RACES.race_id = PITSTOP.race_id AND RACES.race_id = "{race_id}"
              group by RACES.race_id, DRIVERS.driver_id"""
     db_cursor.execute(query)
@@ -159,10 +152,10 @@ def average_position_of_drivers_ascend(db_cursor, race_year):
 
 #to find the driver names, surnames and the year they won
 def the_drivers_for_their_nationality(db_cursor):
-    query = f"""select DISTINCT(DRIVERS.driver_id), DRIVERS.forename, DRIVERS.surname, RACES.year, DRIVERS.nationality, Constructors.nationality
-              from DRIVERS, Constructors, RESULTS,RACES
-              where DRIVERS.nationality = Constructors.nationality AND RESULTS.race_id = RACES.race_id AND
-              RESULTS.constructor_id = Constructors.constructor_id AND DRIVERS.driver_id = RESULTS.driver_id AND 
+    query = f"""select DISTINCT(DRIVERS.driver_id), DRIVERS.forename, DRIVERS.surname, RACES.year, DRIVERS.nationality, CONSTRUCTORS.nationality
+              from DRIVERS, CONSTRUCTORS, RESULTS,RACES
+              where DRIVERS.nationality = CONSTRUCTORS.nationality AND RESULTS.race_id = RACES.race_id AND
+              RESULTS.constructor_id = CONSTRUCTORS.constructor_id AND DRIVERS.driver_id = RESULTS.driver_id AND 
               DRIVERS.driver_id IN (select DISTINCT(DRIVERS.driver_id) from DRIVERS, RESULTS, RACES
               where RESULTS.position_order = 1 AND RESULTS.race_id = RACES.race_id AND RESULTS.driver_id = DRIVERS.driver_id)"""
     db_cursor.execute(query)
@@ -174,7 +167,7 @@ def the_drivers_for_their_nationality(db_cursor):
 # first race year and last race year
 def constructors_with_zero_points(db_cursor):
     query = f"""SELECT Co.name as TeamName, Co.nationality as Nationality, min(Re.position_order) as BestPosition, min(Ra.year) as FirstYear, max(Ra.year) LastYear
-                FROM Constructors as Co, Results as Re, Races as Ra
+                FROM CONSTRUCTORS as Co, RESULTS as Re, RACES as Ra
                 WHERE Co.constructor_id = Re.constructor_id and Ra.race_id = Re.race_id
                 GROUP BY Co.constructor_id
                 HAVING SUM(Re.points) = 0"""
@@ -184,20 +177,25 @@ def constructors_with_zero_points(db_cursor):
 
 # The drivers' total points who raced for the constructors that have won more than 100 races
 def best_drivers_from_best_constructors(db_cursor,won_count):
-    query = f"""SELECT D.forename, D.surname, sum(Re.points) as TotalPoints
-                FROM Constructors as Co, Results as Re, Drivers as D
-                WHERE Co.constructor_id = Re.constructor_id
-                and D.driver_id = Re.driver_id
-                and Co.constructor_id in (
-                    SELECT Co.constructor_id
-                    FROM Constructors as Co, Results as Re
-                    WHERE Co.constructor_id = Re.constructor_id and Re.position_order = 1
-                    GROUP BY Co.constructor_id
-                    HAVING count(*) > "{won_count}"
-                    )
-                GROUP BY D.driver_id
-                ORDER BY sum(Re.points) dESC"""
-    db_cursor.execute(query)
+    query1 = f"""CREATE OR REPLACE VIEW BESTCONS AS
+    SELECT Co.constructor_id
+    FROM CONSTRUCTORS as Co, RESULTS as Re
+    WHERE Co.constructor_id = Re.constructor_id and Re.position_order = 1
+    group by Co.constructor_id
+    having count(*) > 50;
+    """
+
+    query2=f"""SELECT D.forename, D.surname, SUM(Re.points) as TotalPoints
+    FROM CONSTRUCTORS as Co, RESULTS as Re, DRIVERS as D, BESTCONS
+    WHERE Co.constructor_id = Re.constructor_id 
+    and D.driver_id = Re.driver_id 
+    and Co.constructor_id = BESTCONS.constructor_id
+    group by D.driver_id
+    order by SUM(Re.points) DESC
+    """
+
+    db_cursor.execute(query1)
+    db_cursor.execute(query2)
     res = db_cursor.fetchall()
     return json.dumps(res, use_decimal=True)
 
@@ -212,4 +210,3 @@ if __name__ == '__main__':
     constructors_with_zero_points(cursor)
     find_drivers_who_have_been_in_position(cursor, 2014)
     best_drivers_from_best_constructors(cursor,5)
-

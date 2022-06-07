@@ -2,6 +2,7 @@
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 import json
+import simplejson
 
 from app import cursor
 import queries
@@ -11,6 +12,38 @@ cors = CORS(app, resources={'/*':{'origins': 'http://localhost:3000'}})
 
 from flask import current_app
 print = lambda *args: current_app.logger.info(*args)
+
+
+@app.route('/circuits', methods=['GET'])
+def circuits():
+    query = 'SELECT circuit_ref FROM CIRCUITS'
+    cursor.execute(query)
+    res = cursor.fetchall()
+    res = simplejson.dumps(res)
+    return jsonify(res), 200
+
+@app.route('/nationality', methods=['GET'])
+def nationality():
+    query = 'SELECT DISTINCT(nationality) FROM DRIVERS'
+    cursor.execute(query)
+    res = cursor.fetchall()
+    res = simplejson.dumps(res)
+    return jsonify(res), 200
+
+@app.route('/get_driver_id', methods=['POST'])
+def get_driver_id():
+    data = request.json
+    if not type(data) == dict:
+        data = json.loads(data)
+    surname, forename = data['surname'], data['forename']
+    query = f"""SELECT driver_id
+    FROM DRIVERS
+    WHERE DRIVERS.surname = "{surname}" and DRIVERS.forename = "{forename}"
+    """
+    cursor.execute(query)
+    res = cursor.fetchall()
+    res = simplejson.dumps(res)
+    return jsonify(res), 200
 
 @app.route('/find_average_laptime_by_race_id_and_driver_id', methods=['POST'])
 def find_average_laptime_by_race_id_and_driver_id():
@@ -90,7 +123,7 @@ def find_countries_wins():
         data = json.loads(data)
     position = float(data['position'])
     res = queries.find_countries_wins(cursor, position)
-    return json.dumps(res, use_decimal=True)
+    return jsonify(res), 200
 
 @app.route('/average_pitstop_of_drivers', methods=['POST'])
 def average_pitstop_of_drivers():

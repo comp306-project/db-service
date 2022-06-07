@@ -16,6 +16,8 @@ services:
     image: altayatalay/db:latest
     restart: unless-stopped
     command: --sql_mode=''
+    cap_add:
+      - SYS_NICE
     healthcheck:
       test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
       timeout: 20s
