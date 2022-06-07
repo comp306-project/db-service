@@ -162,7 +162,7 @@ WHERE RACES.race_id = RESULTS.race_id AND RESULTS.race_id = RACES.race_id AND DR
 GROUP BY DRIVERS.driver_id
 ORDER BY AVG(RESULTS.position_order) ASC ;
 
-SELECT DISTINCT(DRIVERS.forename), DRIVERS.surname, RACES.year, DRIVERS.nationality, Constructors.nationality
+SELECT DISTINCT(DRIVERS.driver_id), DRIVERS.forename, DRIVERS.surname, RACES.year, DRIVERS.nationality, Constructors.nationality
 FROM DRIVERS, Constructors, RESULTS,RACES
 WHERE DRIVERS.nationality = Constructors.nationality AND RESULTS.race_id = RACES.race_id AND 
 RESULTS.constructor_id = Constructors.constructor_id AND DRIVERS.driver_id = RESULTS.driver_id AND DRIVERS.driver_id IN 
@@ -171,17 +171,13 @@ FROM DRIVERS, RESULTS, RACES
 WHERE RESULTS.position_order = 1 AND RESULTS.race_id = RACES.race_id AND RESULTS.driver_id = DRIVERS.driver_id)
 
 
-# ======== ATA ============
-
-# The teams that haven't scored a point with their name, nat, best end position,
-# first race year and last race year
 SELECT Co.name as TeamName, Co.nationality as Nationality, min(Re.position_order) as BestPosition, min(Ra.year), max(Ra.year)
 FROM Constructors as Co, Results as Re, Races as Ra
 WHERE Co.constructor_id = Re.constructor_id and Ra.race_id = Re.race_id
 GROUP BY Co.constructor_id
 HAVING SUM(Re.points) = 0;
 
-# The drivers' total points who raced for the constructors that have won more than 100 races
+
 SELECT D.forename, D.surname, sum(Re.points) as TotalPoints
 FROM Constructors as Co, Results as Re, Drivers as D
 WHERE Co.constructor_id = Re.constructor_id
